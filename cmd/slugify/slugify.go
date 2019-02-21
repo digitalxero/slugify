@@ -10,6 +10,8 @@ import (
 	"github.com/digitalxero/slugify"
 )
 
+type slugifierFunc = func(text string) string
+
 var (
 	pkgName    = "slugify"
 	version    = "0.0.1"
@@ -18,27 +20,36 @@ var (
 		Use:   pkgName,
 		Short: "CLI Tool to slugify a string",
 	}
+	lowerOnly = false
 	maxLen         = 0
-	ok = slugify.ID_OK
-	dash = slugify.ID_TO_DASH
+	ok = slugify.OK
+	dash = slugify.TO_DASH
+	slugifier slugifierFunc
 )
 
 func main() {
-	cmdRoot.PersistentFlags().IntVarP(
+	cmdRoot.Flags().IntVarP(
 		&maxLen,
 		"max-len",
 		"l",
 		maxLen,
 		``)
 
-	cmdRoot.PersistentFlags().StringVarP(
+	cmdRoot.Flags().BoolVarP(
+		&lowerOnly,
+		"lower",
+		"",
+		lowerOnly,
+		``)
+
+	cmdRoot.Flags().StringVarP(
 		&ok,
 		"ok",
 		"",
 		ok,
 		`Non alphanumeric values that are OK to have in your output`)
 
-	cmdRoot.PersistentFlags().StringVarP(
+	cmdRoot.Flags().StringVarP(
 		&dash,
 		"to-dash",
 		"",
@@ -46,6 +57,7 @@ func main() {
 		`Convert these to a dash instead of stripping them from the output`)
 
 	cmdRoot.Run = run
+	cmdRoot.PersistentPreRun = preReun
 
 	if err := startCLI(); err != nil {
 		os.Exit(127)
@@ -57,14 +69,21 @@ func startCLI() (err error) {
 	return cmdRoot.Execute()
 }
 
+func preReun(c *cobra.Command, args []string) {
+	slugifier = slugify.IDify
+	if lowerOnly {
+		slugifier = slugify.Slugify
+	}
+	slugify.OK = ok
+	slugify.TO_DASH = dash
+}
+
 func run(c *cobra.Command, args []string) {
 	data := strings.Join(args, " ")
-	slugify.ID_OK = ok
-	slugify.ID_TO_DASH = dash
-	data = slugify.IDify(data)
+	data = slugifier(data)
 
 	if maxLen > 0 && len(data) > maxLen {
-		data = slugify.IDify(data[0:maxLen])
+		data = slugifier(data[0:maxLen])
 	}
 
 	fmt.Println(data)

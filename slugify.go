@@ -31,10 +31,8 @@ var SPACE = []*unicode.RangeTable{
 	unicode.Space,
 }
 
-var OK = "-_~."
-var TO_DASH = "/\\—–"
-var ID_OK = "-_"
-var ID_TO_DASH = "/\\—–.~"
+var OK = "-_"
+var TO_DASH = "/\\—–.~!@#$%^&*(){}[]+=?><;:`"
 var extra_dashes = regexp.MustCompile("[-]{2,}")
 
 // Slugify a string. The result will only contain lowercase letters,
@@ -64,6 +62,12 @@ func Slugify(text string) string {
 	return cleanup(string(buf))
 }
 
+// IDify a string. The result will only contain ASCII letters,
+// digits and dashes. It will not begin or end with a dash, and it
+// will not contain runs of multiple dashes.
+//
+// It is forced into being ASCII, but may contain any Unicode
+// characters, with the above restrictions.
 func IDify(text string) string {
 	buf := make([]rune, 0, len(text))
 	text = SanatizeText(text)
@@ -71,14 +75,14 @@ func IDify(text string) string {
 		s := strconv.QuoteRune(r)
 		switch {
 		case unicode.IsOneOf(SAFE, r):
-			buf = append(buf, unicode.ToLower(r))
-		case strings.ContainsAny(s, ID_OK):
+			buf = append(buf, r)
+		case strings.ContainsAny(s, OK):
 			buf = append(buf, r)
 		case unicode.IsOneOf(SPACE, r):
 			buf = append(buf, '-')
 		case unicode.IsOneOf(DASH, r):
 			buf = append(buf, '-')
-		case strings.ContainsAny(s, ID_TO_DASH):
+		case strings.ContainsAny(s, TO_DASH):
 			buf = append(buf, '-')
 		}
 	}
@@ -90,7 +94,7 @@ func SanatizeText(text string) string {
 	for _, c := range text {
 		b.WriteString(transliterations.Transliterate(c))
 	}
-	return strings.ToLower(b.String())
+	return b.String()
 }
 
 func cleanup(text string) string {

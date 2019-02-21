@@ -7,7 +7,8 @@ func TestSlugify(t *testing.T) {
 		{"simple test", "simple-test"},
 		{"I'm go developer", "i-m-go-developer"},
 		{"Simples código em go", "simples-codigo-em-go"},
-		{"日本語の手紙をテスト", "日本語の手紙をテスト"},
+		{"日本語の手紙をテスト", "ri-ben-yu-noshou-zhi-wotesuto"},
+		{"北京kožuščekł", "bei-jing-kozuscekl"},
 	}
 
 	for _, test := range tests {

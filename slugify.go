@@ -41,7 +41,7 @@ var extra_dashes = regexp.MustCompile("[-]{2,}")
 //
 // It is NOT forced into being ASCII, but may contain any Unicode
 // characters, with the above restrictions.
-func Slugify(text string) string {
+func Slugify(text string, maxLen int) string {
 	buf := make([]rune, 0, len(text))
 	text = SanatizeText(text)
 	for _, r := range norm.NFKD.String(text) {
@@ -59,7 +59,7 @@ func Slugify(text string) string {
 			buf = append(buf, '-')
 		}
 	}
-	return cleanup(string(buf))
+	return cleanup(string(buf), maxLen)
 }
 
 // IDify a string. The result will only contain ASCII letters,
@@ -68,7 +68,7 @@ func Slugify(text string) string {
 //
 // It is forced into being ASCII, but may contain any Unicode
 // characters, with the above restrictions.
-func IDify(text string) string {
+func IDify(text string, maxLen int) string {
 	buf := make([]rune, 0, len(text))
 	text = SanatizeText(text)
 	for _, r := range norm.NFKD.String(text) {
@@ -86,7 +86,7 @@ func IDify(text string) string {
 			buf = append(buf, '-')
 		}
 	}
-	return cleanup(string(buf))
+	return cleanup(string(buf), maxLen)
 }
 
 func SanatizeText(text string) string {
@@ -97,8 +97,11 @@ func SanatizeText(text string) string {
 	return b.String()
 }
 
-func cleanup(text string) string {
+func cleanup(text string, maxLen int) string {
 	text = strings.Trim(text, "-")
 	text = extra_dashes.ReplaceAllString(text, "-")
+	if maxLen > 0 && len(text) > maxLen {
+		text = cleanup(text[0:maxLen], maxLen)
+	}
 	return text
 }

@@ -10,7 +10,7 @@ import (
 	"github.com/digitalxero/slugify"
 )
 
-type slugifierFunc = func(text string) string
+type slugifierFunc = func(text string, maxLen int) string
 
 var (
 	pkgName    = "slugify"
@@ -80,11 +80,7 @@ func preReun(c *cobra.Command, args []string) {
 
 func run(c *cobra.Command, args []string) {
 	data := strings.Join(args, " ")
-	data = slugifier(data)
-
-	if maxLen > 0 && len(data) > maxLen {
-		data = slugifier(data[0:maxLen])
-	}
+	data = slugifier(data, maxLen)
 
 	fmt.Println(data)
 }

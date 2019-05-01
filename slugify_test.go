@@ -13,7 +13,24 @@ func TestSlugify(t *testing.T) {
 	}
 
 	for _, test := range tests {
-		if out := Slugify(test.in); out != test.out {
+		if out := Slugify(test.in, 0); out != test.out {
+			t.Errorf("%q: %q != %q", test.in, out, test.out)
+		}
+	}
+}
+
+func TestSlugifyLen(t *testing.T) {
+	var tests = []struct{ in, out string }{
+		{"simple test", "si"},
+		{"Simple Test", "si"},
+		{"I'm go developer", "i"},
+		{"Simples código em go", "si"},
+		{"日本語の手紙をテスト", "ri"},
+		{"北京kožuščekł", "be"},
+	}
+
+	for _, test := range tests {
+		if out := Slugify(test.in, 2); out != test.out {
 			t.Errorf("%q: %q != %q", test.in, out, test.out)
 		}
 	}
@@ -30,7 +47,7 @@ func TestIDify(t *testing.T) {
 	}
 
 	for _, test := range tests {
-		if out := IDify(test.in); out != test.out {
+		if out := IDify(test.in, 0); out != test.out {
 			t.Errorf("%q: %q != %q", test.in, out, test.out)
 		}
 	}

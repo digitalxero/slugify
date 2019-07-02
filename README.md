@@ -1,4 +1,4 @@
-This probject is a simple slugifier for golang projects it has 2 main methods `Slugify` and `IDify` that both force ASCII text.
+This project is a simple slugifier for golang projects it has 2 main methods `Slugify` and `IDify` that both force ASCII text.
 
 `Slugify` lowercases the output string and `IDify` does not. There is also a public `SanatizeText` method that takes a string and runs the transliterations on it which can still return unicode.
 

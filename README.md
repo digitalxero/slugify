@@ -2,7 +2,7 @@ This project is a simple slugifier for golang projects it has 2 main methods `Sl
 
 `Slugify` lowercases the output string and `IDify` does not. There is also a public `SanatizeText` method that takes a string and runs the transliterations on it which can still return unicode.
 
-There is a public `OK` variable that is a sting containing additional characters that are allowed to exist in your slugified string. The `TO_DASH` variable is a list of additional characters to turn into a dash that may otherwise be allowed in a slugified string.
+There is a public `OK` variable that is a string containing additional characters that are allowed to exist in your slugified string. The `TO_DASH` variable is a string of additional characters to turn into a dash that may otherwise be allowed in a slugified string.
 
 ```
 import "github.com/digitalxero/slugify"
